@@ -14,6 +14,9 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -23,23 +26,54 @@
 
     <style>
         body {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #4b57a2 100%);
+            margin: 0;
+            padding: 0;
         }
 
         .login-container {
             min-height: 100vh;
             display: flex;
+        }
+
+        .login-left {
+            flex: 1;
+            display: flex;
             align-items: center;
             justify-content: center;
+            padding: 2rem;
+            background: white;
+            background-image: url('/images/pal-gd.jpg');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(2px);
+        }
+
+        .login-right {
+            width: 400px;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
         }
 
         .login-box {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 350px;
         }
 
         .logo-container {
@@ -58,20 +92,72 @@
             height: 60px;
             margin: 0 auto;
         }
+
+        .welcome-section {
+            text-align: center;
+            color: #333;
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+            color: #2c3e50;
+        }
+
+        .welcome-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+            color: #34495e;
+            font-weight: 500;
+        }
+
+
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-left {
+                flex: none;
+                min-height: 40vh;
+            }
+
+            .login-right {
+                width: 100%;
+                min-height: 60vh;
+            }
+
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="login-container">
-        <div class="login-box">
-            <div class="logo-container">
-                <a href="/" class="d-flex justify-content-center">
-                    <x-application-logo />
-                </a>
-                <h4 class="mt-2">SISTEM INFORMASI BUKU TAMU DIGITAL</h4>
+        <!-- Left Side - Welcome Section -->
+        <div class="login-left">
+            <div class="welcome-section">
+                <div class="mb-4">
+                    <x-application-logo class="mx-auto" style="height: 80px;" />
+                </div>
+                <h1>Selamat Datang</h1>
+                <p>Sistem Informasi Buku Tamu Digital<br>PERUMDA PALJAYA</p>
             </div>
+        </div>
 
-            {{ $slot }}
+        <!-- Right Side - Login Form -->
+        <div class="login-right">
+            <div class="login-box">
+                {{ $slot }}
+            </div>
         </div>
     </div>
 

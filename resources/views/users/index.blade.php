@@ -14,8 +14,9 @@
                 <thead class="table-secondary border-dark">
                     <tr class="align-middle text-center border-dark">
                         <th width="5%" class="border-dark">No</th>
-                        <th width="25%" class="border-dark">Nama</th>
-                        <th width="35%" class="border-dark">Email</th>
+                        <th width="20%" class="border-dark">Nama</th>
+                        <th width="15%" class="border-dark">Username</th>
+                        <th width="25%" class="border-dark">Email</th>
                         <th width="20%" class="border-dark">Tanggal Dibuat</th>
                         <th width="15%" class="border-dark">Aksi</th>
                     </tr>
@@ -26,6 +27,7 @@
                         <td class="text-center">{{ ($users->currentPage() - 1) * $users->perPage() +
                             $loop->iteration }}</td>
                         <td>{{ $user->name }}</td>
+                        <td>{{ $user->username }}</td>
                         <td>{{ $user->email }}</td>
                         <td class="text-center">{{ $user->created_at->format('d/m/Y H:i') }}</td>
                         <td class="text-center">
@@ -51,7 +53,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center">Tidak ada data user</td>
+                        <td colspan="6" class="text-center">Tidak ada data user</td>
                     </tr>
                     @endforelse
                 </tbody>
