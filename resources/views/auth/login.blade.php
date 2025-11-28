@@ -12,7 +12,7 @@
                 value="{{ old('username') }}" required autofocus autocomplete="username"
                 placeholder="Masukkan username" />
             @if($errors->get('username'))
-            <div class="text-danger mt-1 small">
+            <div class="mt-1 text-danger small">
                 @foreach($errors->get('username') as $error)
                 <div>{{ $error }}</div>
                 @endforeach
@@ -26,7 +26,7 @@
             <input id="password" class="form-control form-control-lg" type="password" name="password" required
                 autocomplete="current-password" placeholder="Masukkan password" />
             @if($errors->get('password'))
-            <div class="text-danger mt-1 small">
+            <div class="mt-1 text-danger small">
                 @foreach($errors->get('password') as $error)
                 <div>{{ $error }}</div>
                 @endforeach
@@ -44,14 +44,21 @@
             </div>
         </div>
 
-        <div class="d-grid gap-2">
+        <div class="gap-2 d-grid">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-sign-in-alt me-2"></i>Login
             </button>
         </div>
 
+        <div class="gap-2 mt-2 d-grid">
+            <a href="https://drive.google.com/file/d/1MCKWIAFHq3lskwh_MJ8IovnsAbbap35l/view?usp=sharing" target="_blank"
+                class="btn btn-outline-secondary btn-panduan">
+                <i class="fas fa-question-circle me-2"></i>Panduan
+            </a>
+        </div>
+
         @if (Route::has('password.request'))
-        <div class="text-center mt-3">
+        <div class="mt-3 text-center">
             <a href="{{ route('password.request') }}" class="text-decoration-none text-muted small">
                 Lupa password?
             </a>
@@ -81,6 +88,21 @@
         .form-control-lg {
             padding: 0.75rem 1rem;
             font-size: 1rem;
+        }
+
+        .btn-panduan {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            border-color: #6c757d;
+        }
+
+        .btn-panduan:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
         }
     </style>
 </x-guest-layout>
