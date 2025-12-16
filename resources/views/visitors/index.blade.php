@@ -70,7 +70,8 @@
                     <tr class="text-center align-middle border-dark">
                         <th width="5%" class="border-dark">No</th>
                         <th width="10%" class="border-dark">Tanggal</th>
-                        <th width="8%" class="border-dark">Jam</th>
+                        <th width="8%" class="border-dark">Jam In</th>
+                        <th width="8%" class="border-dark">Jam Out</th>
                         <th width="18%" class="border-dark">Nama</th>
                         <th width="10%" class="border-dark">Kategori</th>
                         <th width="25%" class="border-dark">Tujuan Kunjungan</th>
@@ -86,6 +87,7 @@
                             $loop->iteration }}</td>
                         <td class="text-center">{{ date('d/m/Y', strtotime($visitor->tanggal)) }}</td>
                         <td class="text-center">{{ date('H:i', strtotime($visitor->jam)) }}</td>
+                        <td class="text-center">{{ $visitor->jam_checkout ? date('H:i', strtotime($visitor->jam_checkout)) : '-' }}</td>
                         <td>{{ $visitor->nama }}</td>
                         <td class="text-center">
                             <span class="badge bg-{{ $visitor->kategori == 'pelanggan' ? 'primary' : 'info' }}">
@@ -134,7 +136,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" class="text-center">Tidak ada data tamu</td>
+                        <td colspan="10" class="text-center">Tidak ada data tamu</td>
                     </tr>
                     @endforelse
                 </tbody>

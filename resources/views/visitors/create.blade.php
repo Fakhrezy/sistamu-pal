@@ -8,7 +8,7 @@
     <div class="card-body">
         <form action="{{ route('visitors.store') }}" method="POST">
             @csrf
-            <div class="row mb-3">
+            <div class="mb-3 row">
                 <div class="col-md-6">
                     <label for="tanggal" class="form-label">Tanggal</label>
                     <input type="date" class="form-control @error('tanggal') is-invalid @enderror" id="tanggal"
@@ -22,6 +22,14 @@
                     <input type="text" class="form-control timepicker @error('jam') is-invalid @enderror" id="jam"
                         name="jam" value="{{ old('jam', date('H:i')) }}" required>
                     @error('jam')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6">
+                    <label for="jam_checkout" class="form-label">Jam Checkout</label>
+                    <input type="text" name="form-cotrol timepicker @error('jam_checkout') is-invalid @enderror"
+                    id="jam_checkout"  name="jam_checkout" value="{{ old('jam_checkout', $visitor->jam_checkout ?? '') }}">
+                    @error('jam_checkout')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

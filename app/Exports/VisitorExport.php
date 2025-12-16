@@ -3,29 +3,30 @@
 namespace App\Exports;
 
 use App\Models\Visitor;
-use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
 
-class VisitorExport implements FromQuery, WithHeadings, WithMapping
+class VisitorExport
 {
-    use Exportable;
-
     protected $tanggal_mulai;
     protected $tanggal_akhir;
     protected $kategori;
+    protected $search;
 
-    public function __construct($tanggal_mulai = null, $tanggal_akhir = null, $kategori = null)
+    public function __construct($tanggal_mulai = null, $tanggal_akhir = null, $kategori = null, $search = null)
     {
         $this->tanggal_mulai = $tanggal_mulai;
         $this->tanggal_akhir = $tanggal_akhir;
         $this->kategori = $kategori;
+        $this->search = $search;
     }
 
-    public function query()
+    public function export()
     {
         $query = Visitor::query();
+
+        // Filter pencarian nama
+        if ($this->search) {
+            $query->where('nama', 'like', '%' . $this->search . '%');
+        }
 
         if ($this->tanggal_mulai) {
             $query->where('tanggal', '>=', $this->tanggal_mulai);
@@ -37,30 +38,39 @@ class VisitorExport implements FromQuery, WithHeadings, WithMapping
             $query->where('kategori', $this->kategori);
         }
 
-        return $query->orderBy('tanggal', 'desc')->orderBy('jam', 'desc');
-    }
+        $visitors = $query->orderBy('tanggal', 'desc')->orderBy('jam', 'desc')->get();
 
-    public function headings(): array
-    {
-        return [
+        $data = [];
+
+        // Header
+        $data[] = [
+            'No',
             'Tanggal',
-            'Jam',
+            'Jam Check In',
+            'Jam Check Out',
             'Nama',
             'Kategori',
             'Tujuan Kunjungan',
-            'Kontak'
+            'Kontak',
+            'Status'
         ];
-    }
 
-    public function map($visitor): array
-    {
-        return [
-            date('d/m/Y', strtotime($visitor->tanggal)),
-            date('H:i', strtotime($visitor->jam)),
-            $visitor->nama,
-            ucfirst($visitor->kategori),
-            $visitor->tujuan_kunjungan,
-            $visitor->kontak
-        ];
+        // Data rows
+        $no = 1;
+        foreach ($visitors as $visitor) {
+            $data[] = [
+                $no++,
+                date('d/m/Y', strtotime($visitor->tanggal)),
+                date('H:i', strtotime($visitor->jam)),
+                $visitor->jam_checkout ? date('H:i', strtotime($visitor->jam_checkout)) : '-',
+                $visitor->nama,
+                ucfirst($visitor->kategori),
+                $visitor->tujuan_kunjungan,
+                $visitor->kontak,
+                ucfirst($visitor->status)
+            ];
+        }
+
+        return $data;
     }
 }

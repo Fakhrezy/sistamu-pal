@@ -13,6 +13,7 @@ class Visitor extends Model
     protected $fillable = [
         'tanggal',
         'jam',
+        'jam_checkout',
         'nama',
         'kategori',
         'tujuan_kunjungan',

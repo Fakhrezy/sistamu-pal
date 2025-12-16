@@ -91,6 +91,7 @@ class VisitorController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jam' => 'required',
+            'jam_checkout' => 'nullable',
             'nama' => 'required|string|max:255',
             'kategori' => 'required|in:pelanggan,tamu',
             'tujuan_kunjungan' => 'required|string',
@@ -129,6 +130,7 @@ class VisitorController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jam' => 'required',
+            'jam_checkout' => 'nullable',
             'nama' => 'required|string|max:255',
             'kategori' => 'required|in:pelanggan,tamu',
             'tujuan_kunjungan' => 'required|string',
@@ -157,7 +159,15 @@ class VisitorController extends Controller
 
         // Toggle status
         $newStatus = $visitor->status === 'check in' ? 'check out' : 'check in';
-        $visitor->update(['status' => $newStatus]);
+
+        $updateData = ['status' => $newStatus];
+        if ($newStatus === 'check out') {
+            $updateData['jam_checkout'] = now()->format('H:i:s');
+        } else {
+            $updateData['jam_checkout'] = null;
+        }
+
+        $visitor->update($updateData);
 
         return redirect()->route('visitors.index')->with('success', 'Status berhasil diubah menjadi ' . $newStatus . '.');
     }
@@ -167,8 +177,29 @@ class VisitorController extends Controller
         $tanggal_mulai = $request->get('tanggal_mulai');
         $tanggal_akhir = $request->get('tanggal_akhir');
         $kategori = $request->get('kategori');
+        $search = $request->get('search');
 
-        return (new VisitorExport($tanggal_mulai, $tanggal_akhir, $kategori))
-            ->download('data-tamu-' . date('Y-m-d') . '.xlsx');
+        $exporter = new VisitorExport($tanggal_mulai, $tanggal_akhir, $kategori, $search);
+        $data = $exporter->export();
+
+        $filename = 'data-tamu-' . date('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($data) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF)); // UTF-8 BOM
+
+            foreach ($data as $row) {
+                fputcsv($file, $row);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

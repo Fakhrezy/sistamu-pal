@@ -28,9 +28,12 @@ Route::middleware('auth')->group(function () {
 
     // BTD Paljaya Routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('home');
+
+    // Visitors routes - export harus sebelum resource
+    Route::get('/visitors/export', [VisitorController::class, 'export'])->name('visitors.export');
     Route::resource('visitors', VisitorController::class);
     Route::post('/visitors/{id}/toggle-status', [VisitorController::class, 'toggleStatus'])->name('visitors.toggle-status');
-    Route::get('/visitors/export', [VisitorController::class, 'export'])->name('visitors.export');
+
     Route::resource('users', UserController::class);
 });
 
