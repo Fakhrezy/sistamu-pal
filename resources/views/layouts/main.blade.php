@@ -150,12 +150,13 @@
                                 <i class="bi bi-speedometer2"></i> Dashboard
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- Menu Input Tamu disembunyikan --}}
+                        {{-- <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('visitors.create') ? 'active' : '' }}"
                                 href="{{ route('visitors.create') }}">
                                 <i class="bi bi-person-plus"></i> Input Tamu
                             </a>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('visitors.index') ? 'active' : '' }}"
                                 href="{{ route('visitors.index') }}">

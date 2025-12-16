@@ -16,6 +16,7 @@ class Visitor extends Model
         'nama',
         'kategori',
         'tujuan_kunjungan',
-        'kontak'
+        'kontak',
+        'status'
     ];
 }

@@ -9,11 +9,48 @@ use Illuminate\Http\Request;
 class VisitorController extends Controller
 {
     /**
+     * Display public form for visitors
+     */
+    public function publicForm()
+    {
+        return view('visitors.public-form');
+    }
+
+    /**
+     * Store visitor data from public form
+     */
+    public function publicStore(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'kategori' => 'required|in:pelanggan,tamu',
+            'tujuan_kunjungan' => 'required|string',
+            'kontak' => 'required|string|max:255',
+        ]);
+
+        Visitor::create([
+            'tanggal' => now()->format('Y-m-d'),
+            'jam' => now()->format('H:i:s'),
+            'nama' => $request->nama,
+            'kategori' => $request->kategori,
+            'tujuan_kunjungan' => $request->tujuan_kunjungan,
+            'kontak' => $request->kontak,
+        ]);
+
+        return redirect()->route('visitor.form')->with('success', 'Terima kasih! Data Anda telah berhasil disimpan.');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $query = Visitor::query();
+
+        // Filter pencarian nama
+        if ($request->filled('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
 
         // Filter tanggal
         if ($request->filled('tanggal_mulai')) {
@@ -58,6 +95,7 @@ class VisitorController extends Controller
             'kategori' => 'required|in:pelanggan,tamu',
             'tujuan_kunjungan' => 'required|string',
             'kontak' => 'required|string|max:255',
+            'status' => 'required|in:check in,check out',
         ]);
 
         Visitor::create($request->all());
@@ -95,6 +133,7 @@ class VisitorController extends Controller
             'kategori' => 'required|in:pelanggan,tamu',
             'tujuan_kunjungan' => 'required|string',
             'kontak' => 'required|string|max:255',
+            'status' => 'required|in:check in,check out',
         ]);
 
         $visitor->update($request->all());
@@ -110,6 +149,17 @@ class VisitorController extends Controller
         $visitor->delete();
 
         return redirect()->route('visitors.index')->with('success', 'Data tamu berhasil dihapus.');
+    }
+
+    public function toggleStatus(string $id)
+    {
+        $visitor = Visitor::findOrFail($id);
+
+        // Toggle status
+        $newStatus = $visitor->status === 'check in' ? 'check out' : 'check in';
+        $visitor->update(['status' => $newStatus]);
+
+        return redirect()->route('visitors.index')->with('success', 'Status berhasil diubah menjadi ' . $newStatus . '.');
     }
 
     public function export(Request $request)

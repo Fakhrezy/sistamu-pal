@@ -67,6 +67,18 @@
                 @enderror
             </div>
 
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                    <option value="">Pilih Status</option>
+                    <option value="check in" {{ old('status')=='check in' ? 'selected' : '' }}>Check In</option>
+                    <option value="check out" {{ old('status')=='check out' ? 'selected' : '' }}>Check Out</option>
+                </select>
+                @error('status')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
             <div class="text-end">
                 <a href="{{ route('visitors.index') }}" class="btn btn-secondary">Batal</a>
                 <button type="submit" class="btn btn-primary">Simpan</button>

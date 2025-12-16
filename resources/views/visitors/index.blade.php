@@ -6,10 +6,31 @@
         <h3>Data Tamu</h3>
     </div>
     <div class="card-body">
+        <!-- Search Form -->
+        <div class="mb-3">
+            <form action="{{ route('visitors.index') }}" method="GET" class="row g-2">
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control" name="search" placeholder="Cari nama tamu..."
+                            value="{{ request('search') }}">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search me-1"></i>Cari
+                    </button>
+                </div>
+            </form>
+        </div>
+
         <!-- Filter Form -->
         <div class="mb-3 card">
             <div class="card-body">
                 <form action="{{ route('visitors.index') }}" method="GET" class="row g-3">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
                     <div class="col-md-3">
                         <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
                         <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai"
@@ -48,12 +69,13 @@
                 <thead class="table-secondary border-dark">
                     <tr class="text-center align-middle border-dark">
                         <th width="5%" class="border-dark">No</th>
-                        <th width="12%" class="border-dark">Tanggal</th>
+                        <th width="10%" class="border-dark">Tanggal</th>
                         <th width="8%" class="border-dark">Jam</th>
-                        <th width="20%" class="border-dark">Nama</th>
+                        <th width="18%" class="border-dark">Nama</th>
                         <th width="10%" class="border-dark">Kategori</th>
-                        <th width="30%" class="border-dark">Tujuan Kunjungan</th>
-                        <th width="15%" class="border-dark">Kontak</th>
+                        <th width="25%" class="border-dark">Tujuan Kunjungan</th>
+                        <th width="12%" class="border-dark">Kontak</th>
+                        <th width="10%" class="border-dark">Status</th>
                         <th width="10%" class="border-dark">Aksi</th>
                     </tr>
                 </thead>
@@ -73,7 +95,19 @@
                         <td>{{ $visitor->tujuan_kunjungan }}</td>
                         <td class="text-center">{{ $visitor->kontak }}</td>
                         <td class="text-center">
+                            <span class="badge bg-{{ $visitor->status == 'check in' ? 'success' : 'secondary' }}">
+                                {{ ucfirst($visitor->status) }}
+                            </span>
+                        </td>
+                        <td class="text-center">
                             <div class="btn-group" role="group">
+                                <button type="button"
+                                    class="btn btn-{{ $visitor->status == 'check in' ? 'info' : 'success' }} btn-sm me-1"
+                                    title="Ubah Status ke {{ $visitor->status == 'check in' ? 'Check Out' : 'Check In' }}"
+                                    onclick="confirmStatusChange({{ $visitor->id }}, '{{ $visitor->status }}')">
+                                    <i
+                                        class="bi bi-{{ $visitor->status == 'check in' ? 'box-arrow-right' : 'box-arrow-in-right' }}"></i>
+                                </button>
                                 <a href="{{ route('visitors.edit', $visitor->id) }}" class="btn btn-warning btn-sm me-1"
                                     title="Edit">
                                     <img src="{{ asset('images/draw.png') }}" alt="Edit" width="16" height="16"
@@ -90,12 +124,17 @@
                                     @csrf
                                     @method('DELETE')
                                 </form>
+                                <form id="status-form-{{ $visitor->id }}"
+                                    action="{{ route('visitors.toggle-status', $visitor->id) }}" method="POST"
+                                    style="display: none;">
+                                    @csrf
+                                </form>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center">Tidak ada data tamu</td>
+                        <td colspan="9" class="text-center">Tidak ada data tamu</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -143,6 +182,41 @@
 
                 // Submit form
                 document.getElementById('delete-form-' + id).submit();
+            }
+        });
+    }
+
+    function confirmStatusChange(id, currentStatus) {
+        const newStatus = currentStatus === 'check in' ? 'Check Out' : 'Check In';
+        const icon = currentStatus === 'check in' ? 'box-arrow-right' : 'box-arrow-in-right';
+
+        Swal.fire({
+            title: 'Ubah Status?',
+            html: `Apakah Anda yakin ingin mengubah status menjadi <strong>${newStatus}</strong>?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: currentStatus === 'check in' ? '#17a2b8' : '#28a745',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Ubah!',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            focusCancel: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Tampilkan loading
+                Swal.fire({
+                    title: 'Mengubah Status...',
+                    text: 'Sedang memproses perubahan status',
+                    icon: 'info',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Submit form
+                document.getElementById('status-form-' + id).submit();
             }
         });
     }

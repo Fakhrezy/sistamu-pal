@@ -17,14 +17,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Public Route - Form Tamu
+Route::get('/', [VisitorController::class, 'publicForm'])->name('visitor.form');
+Route::post('/visitor/store', [VisitorController::class, 'publicStore'])->name('visitor.store');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // BTD Paljaya Routes
-    Route::get('/', [DashboardController::class, 'index'])->name('home');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('home');
     Route::resource('visitors', VisitorController::class);
+    Route::post('/visitors/{id}/toggle-status', [VisitorController::class, 'toggleStatus'])->name('visitors.toggle-status');
     Route::get('/visitors/export', [VisitorController::class, 'export'])->name('visitors.export');
     Route::resource('users', UserController::class);
 });
