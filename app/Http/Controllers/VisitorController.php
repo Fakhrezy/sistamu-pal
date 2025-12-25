@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Visitor;
 use App\Exports\VisitorExport;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class VisitorController extends Controller
 {
@@ -26,6 +28,7 @@ class VisitorController extends Controller
             'kategori' => 'required|in:pelanggan,tamu',
             'tujuan_kunjungan' => 'required|string',
             'kontak' => 'required|string|max:255',
+            'asal_instansi' => 'nullable|string|max:255',
         ]);
 
         Visitor::create([
@@ -35,6 +38,7 @@ class VisitorController extends Controller
             'kategori' => $request->kategori,
             'tujuan_kunjungan' => $request->tujuan_kunjungan,
             'kontak' => $request->kontak,
+            'asal_instansi' => $request->asal_instansi,
         ]);
 
         return redirect()->route('visitor.form')->with('success', 'Terima kasih! Data Anda telah berhasil disimpan.');
@@ -47,9 +51,12 @@ class VisitorController extends Controller
     {
         $query = Visitor::query();
 
-        // Filter pencarian nama
+        // Filter pencarian nama dan asal instansi
         if ($request->filled('search')) {
-            $query->where('nama', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%')
+                    ->orWhere('asal_instansi', 'like', '%' . $request->search . '%');
+            });
         }
 
         // Filter tanggal
@@ -96,6 +103,7 @@ class VisitorController extends Controller
             'kategori' => 'required|in:pelanggan,tamu',
             'tujuan_kunjungan' => 'required|string',
             'kontak' => 'required|string|max:255',
+            'asal_instansi' => 'nullable|string|max:255',
             'status' => 'required|in:check in,check out',
         ]);
 
@@ -135,6 +143,7 @@ class VisitorController extends Controller
             'kategori' => 'required|in:pelanggan,tamu',
             'tujuan_kunjungan' => 'required|string',
             'kontak' => 'required|string|max:255',
+            'asal_instansi' => 'nullable|string|max:255',
             'status' => 'required|in:check in,check out',
         ]);
 
@@ -182,24 +191,34 @@ class VisitorController extends Controller
         $exporter = new VisitorExport($tanggal_mulai, $tanggal_akhir, $kategori, $search);
         $data = $exporter->export();
 
-        $filename = 'data-tamu-' . date('Y-m-d') . '.csv';
+        // Create new Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
+        // Set header style
+        $sheet->getStyle('A1:I1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:I1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('D3D3D3');
 
-        $callback = function () use ($data) {
-            $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF)); // UTF-8 BOM
+        // Insert data
+        $sheet->fromArray($data, null, 'A1');
 
-            foreach ($data as $row) {
-                fputcsv($file, $row);
-            }
+        // Auto-size columns
+        foreach (range('A', 'I') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
 
-            fclose($file);
-        };
+        // Set filename
+        $filename = 'data-tamu-' . date('Y-m-d') . '.xlsx';
 
-        return response()->stream($callback, 200, $headers);
+        // Create writer and output
+        $writer = new Xlsx($spreadsheet);
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
     }
 }

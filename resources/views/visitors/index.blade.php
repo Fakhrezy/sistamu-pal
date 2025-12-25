@@ -14,8 +14,8 @@
                         <span class="input-group-text">
                             <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" class="form-control" name="search" placeholder="Cari nama tamu..."
-                            value="{{ request('search') }}">
+                        <input type="text" class="form-control" name="search"
+                            placeholder="Cari nama tamu atau asal instansi..." value="{{ request('search') }}">
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -52,11 +52,18 @@
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
                         <div class="gap-2 d-grid d-md-flex w-100">
-                            <button type="submit" class="btn btn-light flex-fill">Filter</button>
-                            <a href="{{ route('visitors.index') }}" class="btn btn-light flex-fill">Reset</a>
+                            <button type="submit" class="btn btn-light flex-fill">
+                                <i class="bi bi-funnel me-1"></i>Filter
+                            </button>
+                            @if(request('tanggal_mulai') || request('tanggal_akhir') || request('kategori') != 'semua'
+                            && request('kategori') || request('search'))
+                            <a href="{{ route('visitors.index') }}" class="btn btn-light flex-fill">
+                                <i class="bi bi-x-circle me-1"></i>Reset
+                            </a>
+                            @endif
                             <button type="submit" class="btn btn-outline-success flex-fill"
                                 formaction="{{ route('visitors.export') }}" formmethod="GET">
-                                <i class="bi bi-file-excel me-1"></i>Export
+                                <i class="bi bi-download me-1"></i>Export
                             </button>
                         </div>
                     </div>
@@ -70,13 +77,14 @@
                     <tr class="text-center align-middle border-dark">
                         <th width="5%" class="border-dark">No</th>
                         <th width="10%" class="border-dark">Tanggal</th>
-                        <th width="8%" class="border-dark">Jam In</th>
-                        <th width="8%" class="border-dark">Jam Out</th>
-                        <th width="18%" class="border-dark">Nama</th>
-                        <th width="10%" class="border-dark">Kategori</th>
-                        <th width="25%" class="border-dark">Tujuan Kunjungan</th>
-                        <th width="12%" class="border-dark">Kontak</th>
-                        <th width="10%" class="border-dark">Status</th>
+                        <th width="7%" class="border-dark">Jam In</th>
+                        <th width="7%" class="border-dark">Jam Out</th>
+                        <th width="15%" class="border-dark">Nama</th>
+                        <th width="9%" class="border-dark">Kategori</th>
+                        <th width="13%" class="border-dark">Asal Instansi</th>
+                        <th width="18%" class="border-dark">Tujuan Kunjungan</th>
+                        <th width="10%" class="border-dark">Kontak</th>
+                        <th width="8%" class="border-dark">Status</th>
                         <th width="10%" class="border-dark">Aksi</th>
                     </tr>
                 </thead>
@@ -87,38 +95,44 @@
                             $loop->iteration }}</td>
                         <td class="text-center">{{ date('d/m/Y', strtotime($visitor->tanggal)) }}</td>
                         <td class="text-center">{{ date('H:i', strtotime($visitor->jam)) }}</td>
-                        <td class="text-center">{{ $visitor->jam_checkout ? date('H:i', strtotime($visitor->jam_checkout)) : '-' }}</td>
+                        <td class="text-center">{{ $visitor->jam_checkout ? date('H:i',
+                            strtotime($visitor->jam_checkout)) : '-' }}</td>
                         <td>{{ $visitor->nama }}</td>
                         <td class="text-center">
-                            <span class="badge bg-{{ $visitor->kategori == 'pelanggan' ? 'primary' : 'info' }}">
+                            <span class="badge"
+                                style="background-color: {{ $visitor->kategori == 'pelanggan' ? '#a78bfa' : '#7dd3fc' }}; color: {{ $visitor->kategori == 'pelanggan' ? '#3730a3' : '#0c4a6e' }};">
                                 {{ ucfirst($visitor->kategori) }}
                             </span>
                         </td>
+                        <td>{{ $visitor->asal_instansi ?? '-' }}</td>
                         <td>{{ $visitor->tujuan_kunjungan }}</td>
                         <td class="text-center">{{ $visitor->kontak }}</td>
                         <td class="text-center">
-                            <span class="badge bg-{{ $visitor->status == 'check in' ? 'success' : 'secondary' }}">
+                            <span class="badge"
+                                style="background-color: {{ $visitor->status == 'check in' ? '#86efac' : '#d1d5db' }}; color: {{ $visitor->status == 'check in' ? '#065f46' : '#374151' }};">
                                 {{ ucfirst($visitor->status) }}
                             </span>
                         </td>
                         <td class="text-center">
                             <div class="btn-group" role="group">
-                                <button type="button"
-                                    class="btn btn-{{ $visitor->status == 'check in' ? 'info' : 'success' }} btn-sm me-1"
+                                <button type="button" class="btn btn-sm me-1"
+                                    style="background-color: {{ $visitor->status == 'check in' ? '#86efac' : '#9ca3af' }}; border-color: {{ $visitor->status == 'check in' ? '#4ade80' : '#6b7280' }}; color: {{ $visitor->status == 'check in' ? '#065f46' : '#fff' }};"
                                     title="Ubah Status ke {{ $visitor->status == 'check in' ? 'Check Out' : 'Check In' }}"
                                     onclick="confirmStatusChange({{ $visitor->id }}, '{{ $visitor->status }}')">
                                     <i
                                         class="bi bi-{{ $visitor->status == 'check in' ? 'box-arrow-right' : 'box-arrow-in-right' }}"></i>
                                 </button>
-                                <a href="{{ route('visitors.edit', $visitor->id) }}" class="btn btn-warning btn-sm me-1"
+                                <a href="{{ route('visitors.edit', $visitor->id) }}" class="btn btn-sm me-1"
+                                    style="background-color: #93c5fd; border-color: #60a5fa; color: #1e3a8a;"
                                     title="Edit">
                                     <img src="{{ asset('images/draw.png') }}" alt="Edit" width="16" height="16"
-                                        style="filter: brightness(0) invert(1);">
+                                        style="filter: brightness(0) saturate(100%) invert(17%) sepia(50%) saturate(3000%) hue-rotate(215deg) brightness(90%) contrast(90%);">
                                 </a>
-                                <button type="button" class="btn btn-danger btn-sm" title="Hapus"
-                                    onclick="confirmDelete({{ $visitor->id }})">
+                                <button type="button" class="btn btn-sm"
+                                    style="background-color: #fca5a5; border-color: #f87171; color: #7f1d1d;"
+                                    title="Hapus" onclick="confirmDelete({{ $visitor->id }})">
                                     <img src="{{ asset('images/trash-bin.png') }}" alt="Hapus" width="16" height="16"
-                                        style="filter: brightness(0) invert(1);">
+                                        style="filter: brightness(0) saturate(100%) invert(12%) sepia(50%) saturate(3000%) hue-rotate(0deg) brightness(80%) contrast(90%);">
                                 </button>
                                 <form id="delete-form-{{ $visitor->id }}"
                                     action="{{ route('visitors.destroy', $visitor->id) }}" method="POST"
@@ -136,7 +150,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="10" class="text-center">Tidak ada data tamu</td>
+                        <td colspan="11" class="text-center">Tidak ada data tamu</td>
                     </tr>
                     @endforelse
                 </tbody>

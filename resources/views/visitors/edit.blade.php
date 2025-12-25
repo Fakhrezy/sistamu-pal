@@ -9,7 +9,8 @@
         <form action="{{ route('visitors.update', $visitor->id) }}" method="POST">
             @csrf
             @method('PUT')
-            <div class="row mb-3">
+
+            <div class="mb-3 row">
                 <div class="col-md-6">
                     <label for="tanggal" class="form-label">Tanggal</label>
                     <input type="date" class="form-control @error('tanggal') is-invalid @enderror" id="tanggal"
@@ -19,13 +20,22 @@
                     @enderror
                 </div>
                 <div class="col-md-6">
-                    <label for="jam" class="form-label">Jam</label>
+                    <label for="jam" class="form-label">Jam Check In</label>
                     <input type="text" class="form-control timepicker @error('jam') is-invalid @enderror" id="jam"
-                        name="jam" value="{{ old('jam', date('H:i', strtotime($visitor->jam))) }}" required>
+                        name="jam" value="{{ old('jam', $visitor->jam) }}" required>
                     @error('jam')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="jam_checkout" class="form-label">Jam Check Out</label>
+                <input type="text" class="form-control timepicker @error('jam_checkout') is-invalid @enderror"
+                    id="jam_checkout" name="jam_checkout" value="{{ old('jam_checkout', $visitor->jam_checkout) }}">
+                @error('jam_checkout')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">
@@ -56,11 +66,10 @@
             </div>
 
             <div class="mb-3">
-                <label for="tujuan_kunjungan" class="form-label">Tujuan Kunjungan</label>
-                <textarea class="form-control @error('tujuan_kunjungan') is-invalid @enderror" id="tujuan_kunjungan"
-                    name="tujuan_kunjungan" rows="3"
-                    required>{{ old('tujuan_kunjungan', $visitor->tujuan_kunjungan) }}</textarea>
-                @error('tujuan_kunjungan')
+                <label for="asal_instansi" class="form-label">Asal Perusahaan/Instansi</label>
+                <input type="text" class="form-control @error('asal_instansi') is-invalid @enderror" id="asal_instansi"
+                    name="asal_instansi" value="{{ old('asal_instansi', $visitor->asal_instansi) }}">
+                @error('asal_instansi')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
@@ -70,6 +79,16 @@
                 <input type="text" class="form-control @error('kontak') is-invalid @enderror" id="kontak" name="kontak"
                     value="{{ old('kontak', $visitor->kontak) }}" required>
                 @error('kontak')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="mb-3">
+                <label for="tujuan_kunjungan" class="form-label">Tujuan Kunjungan</label>
+                <textarea class="form-control @error('tujuan_kunjungan') is-invalid @enderror" id="tujuan_kunjungan"
+                    name="tujuan_kunjungan" rows="3"
+                    required>{{ old('tujuan_kunjungan', $visitor->tujuan_kunjungan) }}</textarea>
+                @error('tujuan_kunjungan')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>

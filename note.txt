@@ -1,4 +1,1 @@
 NAT -> http://103.164.13.66:8002/
-
-- buat timestamp check out
-- fix bug export data

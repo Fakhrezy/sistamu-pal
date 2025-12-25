@@ -18,6 +18,7 @@ class Visitor extends Model
         'kategori',
         'tujuan_kunjungan',
         'kontak',
+        'asal_instansi',
         'status'
     ];
 }

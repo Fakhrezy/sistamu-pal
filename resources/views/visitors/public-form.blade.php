@@ -76,8 +76,8 @@
         .datetime-display {
             background: #f8f9fa;
             border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 2rem;
+            padding: 0.75rem;
+            margin-bottom: 1.5rem;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -90,20 +90,20 @@
 
         .datetime-item i {
             color: #2a5298;
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
         }
 
         .datetime-item .label {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             color: #6c757d;
             text-transform: uppercase;
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
         }
 
         .datetime-item .value {
-            font-size: 1.25rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: #2c3e50;
         }
@@ -257,6 +257,31 @@
                     @enderror
                 </div>
 
+                <!-- Asal Perusahaan/Instansi -->
+                <div class="mb-3">
+                    <label for="asal_instansi" class="form-label">
+                        Asal Perusahaan/Instansi
+                    </label>
+                    <input type="text" class="form-control @error('asal_instansi') is-invalid @enderror"
+                        id="asal_instansi" name="asal_instansi" value="{{ old('asal_instansi') }}"
+                        placeholder="Masukkan asal perusahaan/instansi">
+                    @error('asal_instansi')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Kontak -->
+                <div class="mb-3">
+                    <label for="kontak" class="form-label">
+                        Nomor Kontak <span class="required">*</span>
+                    </label>
+                    <input type="text" class="form-control @error('kontak') is-invalid @enderror" id="kontak"
+                        name="kontak" value="{{ old('kontak') }}" required placeholder="Masukkan nomor HP/WhatsApp">
+                    @error('kontak')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <!-- Tujuan Kunjungan -->
                 <div class="mb-3">
                     <label for="tujuan_kunjungan" class="form-label">
@@ -266,18 +291,6 @@
                         name="tujuan_kunjungan" required
                         placeholder="Jelaskan tujuan kunjungan Anda">{{ old('tujuan_kunjungan') }}</textarea>
                     @error('tujuan_kunjungan')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <!-- Kontak -->
-                <div class="mb-4">
-                    <label for="kontak" class="form-label">
-                        Nomor Kontak <span class="required">*</span>
-                    </label>
-                    <input type="text" class="form-control @error('kontak') is-invalid @enderror" id="kontak"
-                        name="kontak" value="{{ old('kontak') }}" required placeholder="Masukkan nomor HP/WhatsApp">
-                    @error('kontak')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
